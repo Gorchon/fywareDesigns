@@ -77,6 +77,11 @@ body {
   100% { transform: translateY(100vh); }
 }
 
+@keyframes vrHandFloat {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-10px); }
+}
+
 .glass {
   background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(24px) saturate(1.8);
