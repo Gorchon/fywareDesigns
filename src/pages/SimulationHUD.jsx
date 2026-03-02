@@ -661,7 +661,7 @@ export default function SimulationHUD({ onNext }) {
           position: 'absolute', bottom: '-35px', left: '8%',
           transform: 'rotate(6deg)',
           animation: 'vrHandFloat 3.5s ease-in-out infinite',
-          pointerEvents: 'none', zIndex: 3,
+          pointerEvents: 'none',
         }}>
           <VRHand3D glowColor={activeTD?.color ?? '#fb923c'} isRight={false} />
         </div>
@@ -669,7 +669,7 @@ export default function SimulationHUD({ onNext }) {
           position: 'absolute', bottom: '-35px', right: '8%',
           transform: 'rotate(-6deg)',
           animation: 'vrHandFloat 3.5s ease-in-out 0.85s infinite',
-          pointerEvents: 'none', zIndex: 3,
+          pointerEvents: 'none',
         }}>
           <VRHand3D glowColor={activeTD?.color ?? '#fb923c'} isRight={true} />
         </div>
