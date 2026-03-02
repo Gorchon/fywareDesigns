@@ -82,7 +82,7 @@ export default function SignIn({ onNext }) {
             <FormField label="ID Técnico">
               {/* Icon sits outside the input flow; input gets enough padding */}
               <div className="relative flex items-center">
-                <span className="absolute left-3.5 z-10 flex-shrink-0 pointer-events-none"
+                <span className="absolute left-3.5 z-10 shrink-0 pointer-events-none"
                   style={{ color: focused === 'id' ? 'rgba(251,146,60,0.9)' : 'rgba(251,146,60,0.6)', transition: 'color 0.2s' }}>
                   <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
                     <circle cx="8" cy="5" r="3" stroke="currentColor" strokeWidth="1.5"/>
@@ -111,7 +111,7 @@ export default function SignIn({ onNext }) {
             {/* Empresa */}
             <FormField label="Empresa">
               <div className="relative flex items-center">
-                <span className="absolute left-3.5 z-10 flex-shrink-0 pointer-events-none"
+                <span className="absolute left-3.5 z-10 shrink-0 pointer-events-none"
                   style={{ color: focused === 'company' ? 'rgba(251,146,60,0.9)' : 'rgba(251,146,60,0.6)', transition: 'color 0.2s' }}>
                   <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
                     <rect x="2" y="6" width="12" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.5"/>

@@ -63,7 +63,7 @@ function Notif({ notif, onRemove }) {
   return (
     <div className="page-enter flex items-center gap-3 px-4 py-2.5 rounded-2xl mb-2"
       style={{ background: c.bg, border: `1px solid ${c.border}`, backdropFilter: 'blur(12px)', minWidth: '200px' }}>
-      <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
+      <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
         style={{ background: c.border, color: c.icon }}>{notif.icon}</div>
       <span className="text-sm font-medium" style={{ color: c.text }}>{notif.text}</span>
     </div>
@@ -138,7 +138,7 @@ function HelpModal({ onClose }) {
                 {sec.tips.map((tip, i) => (
                   <li key={i} className="text-xs flex items-start gap-1.5"
                     style={{ color: 'rgba(255,255,255,0.5)' }}>
-                    <span className="mt-0.5 flex-shrink-0" style={{ color: `${sec.color}99` }}>·</span>
+                    <span className="mt-0.5 shrink-0" style={{ color: `${sec.color}99` }}>·</span>
                     {tip}
                   </li>
                 ))}

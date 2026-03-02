@@ -82,20 +82,31 @@ const modules = [
 ]
 
 const statusConfig = {
-  completed: { label: 'Completado', color: '#4ade80', bg: 'rgba(34,197,94,0.12)', border: 'rgba(34,197,94,0.3)' },
-  active:    { label: 'En progreso', color: '#fb923c', bg: 'rgba(251,146,60,0.12)', border: 'rgba(251,146,60,0.3)' },
-  locked:    { label: 'Bloqueado', color: 'rgba(255,255,255,0.25)', bg: 'rgba(255,255,255,0.04)', border: 'rgba(255,255,255,0.08)' },
+  completed: { color: '#4ade80', bg: 'rgba(34,197,94,0.12)',    border: 'rgba(34,197,94,0.3)' },
+  active:    { color: '#fb923c', bg: 'rgba(251,146,60,0.12)',   border: 'rgba(251,146,60,0.3)' },
+  locked:    { color: 'rgba(255,255,255,0.25)', bg: 'rgba(255,255,255,0.04)', border: 'rgba(255,255,255,0.08)' },
 }
 
-export default function ModulesMenu({ onBack }) {
-  const [hovered, setHovered] = useState(null)
+export default function ModulesMenu({ onBack, onModuleSelect }) {
+  const [hovered, setHovered]   = useState(null)
   const [selected, setSelected] = useState('wiring')
+  const [launching, setLaunching] = useState(null)
 
   const completedCount = modules.filter(m => m.status === 'completed').length
-  const totalProgress = Math.round(modules.reduce((acc, m) => acc + m.progress, 0) / modules.length)
+  const totalProgress  = Math.round(modules.reduce((acc, m) => acc + m.progress, 0) / modules.length)
+
+  const handleModuleClick = (mod) => {
+    if (mod.status === 'locked') return
+    setSelected(mod.id)
+    setLaunching(mod.id)
+    setTimeout(() => {
+      setLaunching(null)
+      if (onModuleSelect) onModuleSelect(mod.id)
+    }, 600)
+  }
 
   return (
-    <div className="page-enter relative flex items-center justify-center min-h-screen w-full px-6">
+    <div className="page-enter relative flex items-center justify-center min-h-screen w-full px-6 py-8">
 
       {/* Ambient */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -107,13 +118,13 @@ export default function ModulesMenu({ onBack }) {
 
       <div className="relative w-full max-w-2xl">
 
-        {/* Header card */}
-        <div className="glass rounded-3xl px-8 py-6 mb-4 flex items-center justify-between"
+        {/* Header */}
+        <div className="glass rounded-3xl px-8 py-5 mb-4 flex items-center justify-between"
           style={{ boxShadow: '0 16px 48px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.12)' }}>
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl flex items-center justify-center"
+            <div className="w-11 h-11 rounded-2xl flex items-center justify-center"
               style={{ background: 'linear-gradient(135deg, #f97316, #fbbf24)' }}>
-              <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+              <svg width="20" height="20" viewBox="0 0 22 22" fill="none">
                 <circle cx="11" cy="11" r="4" fill="white"/>
                 {[0,45,90,135,180,225,270,315].map((deg, i) => (
                   <line key={i}
@@ -126,111 +137,108 @@ export default function ModulesMenu({ onBack }) {
               </svg>
             </div>
             <div>
-              <h1 className="text-white text-2xl font-bold tracking-tight">Menú</h1>
-              <p className="text-white/40 text-sm">Módulos de capacitación</p>
+              <h1 className="text-white text-xl font-bold tracking-tight">Menú</h1>
+              <p className="text-white/40 text-xs">Módulos de capacitación · Selecciona uno para iniciar</p>
             </div>
           </div>
-
-          {/* Overall stats */}
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-5">
             <div className="text-right">
               <p className="text-white/40 text-xs tracking-wider uppercase mb-1">Progreso global</p>
               <div className="flex items-center gap-2">
                 <div className="h-1.5 w-24 rounded-full" style={{ background: 'rgba(255,255,255,0.08)' }}>
-                  <div className="h-full rounded-full transition-all duration-500"
-                    style={{ width: `${totalProgress}%`, background: 'linear-gradient(90deg, #f97316, #fbbf24)' }} />
+                  <div className="h-full rounded-full" style={{ width: `${totalProgress}%`, background: 'linear-gradient(90deg, #f97316, #fbbf24)' }} />
                 </div>
                 <span className="text-orange-400 font-bold text-sm">{totalProgress}%</span>
               </div>
             </div>
-            <div className="glass-dark rounded-2xl px-4 py-2.5 text-center">
-              <p className="text-2xl font-bold text-gradient">{completedCount}/{modules.length}</p>
-              <p className="text-white/40 text-xs">Completados</p>
+            <div className="glass-dark rounded-2xl px-3 py-2 text-center">
+              <p className="text-xl font-bold text-gradient">{completedCount}/{modules.length}</p>
+              <p className="text-white/40 text-xs">Hechos</p>
             </div>
           </div>
         </div>
 
-        {/* Modules list */}
-        <div className="glass rounded-3xl p-5 shadow-2xl"
+        {/* List */}
+        <div className="glass rounded-3xl p-4 shadow-2xl"
           style={{ boxShadow: '0 32px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.12)' }}>
-          <div className="flex flex-col gap-2">
-            {modules.map((mod) => {
+          <div className="flex flex-col gap-1.5">
+            {modules.map(mod => {
               const sc = statusConfig[mod.status]
-              const isActive = selected === mod.id
+              const isSelected = selected === mod.id
               const isHov = hovered === mod.id
               const isLocked = mod.status === 'locked'
+              const isLaunching = launching === mod.id
 
               return (
-                <button
-                  key={mod.id}
-                  onClick={() => !isLocked && setSelected(mod.id)}
+                <button key={mod.id}
+                  onClick={() => handleModuleClick(mod)}
                   onMouseEnter={() => setHovered(mod.id)}
                   onMouseLeave={() => setHovered(null)}
                   className="w-full text-left transition-all duration-200"
-                  style={{ cursor: isLocked ? 'not-allowed' : 'pointer', opacity: isLocked ? 0.5 : 1 }}>
+                  style={{ cursor: isLocked ? 'not-allowed' : 'pointer', opacity: isLocked ? 0.45 : 1 }}>
 
                   <div className="flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-200"
                     style={{
-                      background: isActive
-                        ? 'rgba(251,146,60,0.15)'
-                        : isHov && !isLocked
-                          ? 'rgba(255,255,255,0.06)'
-                          : 'transparent',
-                      border: isActive
+                      background: isLaunching
+                        ? 'rgba(251,146,60,0.22)'
+                        : isSelected
+                          ? 'rgba(251,146,60,0.14)'
+                          : isHov && !isLocked ? 'rgba(255,255,255,0.05)' : 'transparent',
+                      border: isSelected || isLaunching
                         ? '1px solid rgba(251,146,60,0.4)'
                         : '1px solid transparent',
+                      transform: isLaunching ? 'scale(0.99)' : 'scale(1)',
                     }}>
 
-                    {/* Module icon */}
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-all duration-200"
+                    {/* Icon */}
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-all duration-200"
                       style={{
-                        background: isActive ? 'linear-gradient(135deg, #f97316, #fbbf24)' : sc.bg,
+                        background: isSelected ? 'linear-gradient(135deg, #f97316, #fbbf24)' : sc.bg,
                         border: `1px solid ${sc.border}`,
-                        color: isActive ? 'white' : sc.color,
+                        color: isSelected ? 'white' : sc.color,
                       }}>
                       {mod.icon}
                     </div>
 
-                    {/* Text */}
+                    {/* Label */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-0.5">
                         <span className="text-white font-semibold text-sm">{mod.label}</span>
-                        {mod.status === 'locked' && (
-                          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                        {isLocked && (
+                          <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
                             <rect x="2" y="5" width="8" height="6" rx="1.5" stroke="rgba(255,255,255,0.3)" strokeWidth="1.2"/>
                             <path d="M4 5V3.5a2 2 0 014 0V5" stroke="rgba(255,255,255,0.3)" strokeWidth="1.2"/>
                           </svg>
+                        )}
+                        {isLaunching && (
+                          <span className="text-xs font-medium" style={{ color: '#fb923c' }}>Abriendo…</span>
                         )}
                       </div>
                       <p className="text-white/40 text-xs truncate">{mod.desc}</p>
                     </div>
 
-                    {/* Progress / status */}
-                    <div className="flex items-center gap-3 flex-shrink-0">
-                      {mod.status !== 'locked' && (
-                        <div className="text-right">
-                          <div className="flex items-center gap-2">
-                            <div className="h-1 w-20 rounded-full" style={{ background: 'rgba(255,255,255,0.08)' }}>
-                              <div className="h-full rounded-full transition-all duration-500"
-                                style={{
-                                  width: `${mod.progress}%`,
-                                  background: mod.status === 'completed'
-                                    ? 'linear-gradient(90deg, #4ade80, #22c55e)'
-                                    : 'linear-gradient(90deg, #f97316, #fbbf24)'
-                                }} />
-                            </div>
-                            <span className="text-xs font-semibold w-8 text-right" style={{ color: sc.color }}>
-                              {mod.progress}%
-                            </span>
-                          </div>
+                    {/* Progress */}
+                    {!isLocked && (
+                      <div className="flex items-center gap-2 shrink-0">
+                        <div className="h-1 w-20 rounded-full" style={{ background: 'rgba(255,255,255,0.08)' }}>
+                          <div className="h-full rounded-full transition-all duration-500"
+                            style={{
+                              width: `${mod.progress}%`,
+                              background: mod.status === 'completed'
+                                ? 'linear-gradient(90deg,#4ade80,#22c55e)'
+                                : 'linear-gradient(90deg,#f97316,#fbbf24)',
+                            }} />
                         </div>
-                      )}
-
-                      {/* Status badge */}
-                      <div className="px-2.5 py-1 rounded-full text-xs font-medium"
-                        style={{ background: sc.bg, color: sc.color, border: `1px solid ${sc.border}` }}>
-                        {mod.status === 'completed' ? '✓' : mod.status === 'active' ? '▶' : '🔒'}
+                        <span className="text-xs font-semibold w-8 text-right" style={{ color: sc.color }}>
+                          {mod.progress}%
+                        </span>
                       </div>
+                    )}
+
+                    {/* Badge */}
+                    <div className="px-2.5 py-1 rounded-full text-xs font-medium shrink-0"
+                      style={{ background: sc.bg, color: sc.color, border: `1px solid ${sc.border}` }}>
+                      {mod.status === 'completed' ? '✓' : mod.status === 'active' ? '▶' : '🔒'}
                     </div>
                   </div>
                 </button>
@@ -238,28 +246,26 @@ export default function ModulesMenu({ onBack }) {
             })}
           </div>
 
-          {/* Bottom actions */}
+          {/* Footer actions */}
           <div className="flex gap-3 mt-4 pt-4" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-            <button
-              onClick={onBack}
+            <button onClick={onBack}
               className="flex items-center gap-2 px-5 py-3 rounded-full text-sm font-medium text-white/60 hover:text-white transition-all duration-200"
               style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
                 <path d="M9 2L4 7l5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-              Volver
+              Volver al HUD
             </button>
             <button
-              className="btn-primary flex-1 py-3 text-sm font-semibold"
-              onClick={() => {}}>
-              Continuar módulo
+              onClick={() => handleModuleClick(modules.find(m => m.id === selected))}
+              disabled={modules.find(m => m.id === selected)?.status === 'locked'}
+              className="btn-primary flex-1 py-3 text-sm font-semibold">
+              Abrir módulo seleccionado
             </button>
           </div>
         </div>
 
-        <p className="text-center text-white/20 text-xs mt-4 tracking-wider">
-          FYWARE VR TRAINING PLATFORM v2.4
-        </p>
+        <p className="text-center text-white/20 text-xs mt-4 tracking-wider">FYWARE VR TRAINING PLATFORM v2.4</p>
       </div>
     </div>
   )
