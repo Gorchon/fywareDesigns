@@ -5,9 +5,14 @@ import Verification from './pages/Verification'
 import Tutorial from './pages/Tutorial'
 import SimulationHUD from './pages/SimulationHUD'
 import ModulesMenu from './pages/ModulesMenu'
+import ModuleDetail from './pages/ModuleDetail'
 import './index.css'
 
-const PAGES = ['signin', 'verification', 'tutorial', 'simulation', 'modules']
+// Pages where the top bar is visible
+const TOPBAR_PAGES = new Set(['signin', 'verification', 'tutorial', 'modules', 'module-detail'])
+
+// Pages used for the dot indicator (module-detail maps to 'modules')
+const NAV_PAGES = ['signin', 'verification', 'tutorial', 'simulation', 'modules']
 
 function PageWrapper({ children, pageKey }) {
   const [visible, setVisible] = useState(false)
@@ -17,37 +22,40 @@ function PageWrapper({ children, pageKey }) {
   }, [pageKey])
 
   return (
-    <div
-      key={pageKey}
-      style={{
-        opacity: visible ? 1 : 0,
-        transform: visible ? 'translateY(0) scale(1)' : 'translateY(14px) scale(0.985)',
-        transition: 'opacity 0.45s cubic-bezier(0.16,1,0.3,1), transform 0.45s cubic-bezier(0.16,1,0.3,1)',
-        width: '100%',
-        height: '100%',
-      }}>
+    <div style={{
+      opacity: visible ? 1 : 0,
+      transform: visible ? 'translateY(0) scale(1)' : 'translateY(14px) scale(0.985)',
+      transition: 'opacity 0.45s cubic-bezier(0.16,1,0.3,1), transform 0.45s cubic-bezier(0.16,1,0.3,1)',
+      width: '100%',
+      height: '100%',
+    }}>
       {children}
     </div>
   )
 }
 
 export default function App() {
-  const [page, setPage] = useState('signin')
+  const [page, setPage]                   = useState('signin')
+  const [selectedModule, setSelectedModule] = useState(null)
 
-  const navigate = (target) => setPage(target)
+  const navigate = (target, options = {}) => {
+    if (options.moduleId !== undefined) setSelectedModule(options.moduleId)
+    setPage(target)
+  }
 
-  const showTopBar = page !== 'simulation'
+  const showTopBar  = TOPBAR_PAGES.has(page)
+  const activeDot   = page === 'module-detail' ? 'modules' : page
 
-  const background =
-    page === 'simulation'
-      ? 'transparent'
-      : 'linear-gradient(135deg, #0a0a0f 0%, #0f0f1a 30%, #12100e 60%, #0d0a08 100%)'
+  const bgStyle = page === 'simulation'
+    ? {}
+    : {
+        background: 'linear-gradient(135deg, #0a0a0f 0%, #0f0f1a 30%, #12100e 60%, #0d0a08 100%)',
+      }
 
   return (
-    <div className="relative w-screen h-screen overflow-hidden"
-      style={{ background }}>
+    <div className="relative w-screen h-screen overflow-hidden" style={bgStyle}>
 
-      {/* Global subtle ambient gradients */}
+      {/* Global ambient gradients */}
       {page !== 'simulation' && (
         <div className="absolute inset-0 pointer-events-none"
           style={{
@@ -59,39 +67,58 @@ export default function App() {
           }} />
       )}
 
-      {/* Top Bar */}
+      {/* Top bar */}
       {showTopBar && <TopBar />}
 
-      {/* Pages */}
+      {/* Page content */}
       <div className="w-full h-full" style={{ paddingTop: showTopBar ? '38px' : 0 }}>
         <PageWrapper pageKey={page}>
+
           {page === 'signin' && (
             <SignIn onNext={() => navigate('verification')} />
           )}
+
           {page === 'verification' && (
             <Verification onNext={() => navigate('tutorial')} />
           )}
+
           {page === 'tutorial' && (
             <Tutorial onNext={() => navigate('simulation')} />
           )}
+
           {page === 'simulation' && (
             <SimulationHUD onNext={() => navigate('modules')} />
           )}
+
           {page === 'modules' && (
-            <ModulesMenu onBack={() => navigate('simulation')} />
+            <ModulesMenu
+              onBack={() => navigate('simulation')}
+              onModuleSelect={(id) => navigate('module-detail', { moduleId: id })}
+            />
           )}
+
+          {page === 'module-detail' && selectedModule && (
+            <ModuleDetail
+              moduleId={selectedModule}
+              onBack={() => navigate('modules')}
+              onStartVR={() => navigate('simulation')}
+            />
+          )}
+
         </PageWrapper>
       </div>
 
-      {/* Navigation indicator dots (bottom center) */}
+      {/* Navigation dots */}
       <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2 z-50 pointer-events-none">
-        {PAGES.map(p => (
+        {NAV_PAGES.map(p => (
           <div key={p}
             className="rounded-full transition-all duration-300"
             style={{
-              width: p === page ? '20px' : '6px',
+              width: p === activeDot ? '20px' : '6px',
               height: '6px',
-              background: p === page ? 'rgba(251,146,60,0.8)' : 'rgba(255,255,255,0.2)',
+              background: p === activeDot
+                ? 'rgba(251,146,60,0.85)'
+                : 'rgba(255,255,255,0.2)',
             }} />
         ))}
       </div>
