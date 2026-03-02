@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import TopBar from '../components/TopBar'
 
 const MODULE_DATA = {
   basic: {
@@ -105,8 +104,7 @@ const TOOL_ICONS = {
 // ── Loading screen ────────────────────────────────────────────────────────────
 function LoadingScreen({ progress, title }) {
   return (
-    <div className="page-enter flex flex-col items-center justify-center min-h-screen w-full px-6"
-      style={{ paddingTop: '38px' }}>
+    <div className="page-enter flex flex-col items-center justify-center min-h-screen w-full px-6">
 
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full opacity-20 blur-3xl"
@@ -172,7 +170,7 @@ function LoadingScreen({ progress, title }) {
 }
 
 // ── Module content ────────────────────────────────────────────────────────────
-function ModuleContent({ data, moduleId, onBack, onStartVR }) {
+function ModuleContent({ data, onBack, onStartVR }) {
   const [completedSteps, setCompletedSteps] = useState(
     new Set(data.steps.filter(s => s.done).map(s => s.id))
   )
@@ -190,8 +188,7 @@ function ModuleContent({ data, moduleId, onBack, onStartVR }) {
   const pct        = Math.round((doneCount / totalSteps) * 100)
 
   return (
-    <div className="page-enter relative flex items-center justify-center min-h-screen w-full px-6 py-6"
-      style={{ paddingTop: '60px' }}>
+    <div className="page-enter relative flex items-center justify-center min-h-screen w-full px-6 py-6">
 
       {/* Ambient */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -391,6 +388,6 @@ export default function ModuleDetail({ moduleId, onBack, onStartVR }) {
   if (!data) return null
 
   return loaded
-    ? <ModuleContent data={data} moduleId={moduleId} onBack={onBack} onStartVR={onStartVR} />
+    ? <ModuleContent data={data} onBack={onBack} onStartVR={onStartVR} />
     : <LoadingScreen progress={loadProgress} title={data.title} />
 }

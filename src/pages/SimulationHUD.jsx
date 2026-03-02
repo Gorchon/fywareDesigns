@@ -53,6 +53,105 @@ const NOTIF_COLORS = {
   warning: { bg: 'rgba(251,191,36,0.15)', border: 'rgba(251,191,36,0.4)', icon: '#fbbf24', text: '#fde68a' },
 }
 
+// ── 3D VR Hand ─────────────────────────────────────────────────────────────────
+function VRHand3D({ glowColor = '#fb923c', isRight = false }) {
+  const u = isRight ? 'R' : 'L'
+  return (
+    <svg width="110" height="165" viewBox="0 0 110 165" fill="none"
+      style={{
+        transform: isRight ? 'scaleX(-1)' : 'none',
+        filter: `drop-shadow(0 0 14px ${glowColor}66) drop-shadow(0 6px 20px rgba(0,0,0,0.85))`,
+        overflow: 'visible',
+      }}>
+      <defs>
+        <linearGradient id={`f${u}`} x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%"   stopColor="#08080f"/>
+          <stop offset="28%"  stopColor="#16162a"/>
+          <stop offset="55%"  stopColor={glowColor} stopOpacity="0.26"/>
+          <stop offset="78%"  stopColor="#16162a"/>
+          <stop offset="100%" stopColor="#08080f"/>
+        </linearGradient>
+        <linearGradient id={`p${u}`} x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%"   stopColor="#06060e"/>
+          <stop offset="22%"  stopColor="#12122a"/>
+          <stop offset="50%"  stopColor={glowColor} stopOpacity="0.16"/>
+          <stop offset="78%"  stopColor="#12122a"/>
+          <stop offset="100%" stopColor="#06060e"/>
+        </linearGradient>
+        <linearGradient id={`m${u}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%"   stopColor="white"/>
+          <stop offset="62%"  stopColor="white"/>
+          <stop offset="100%" stopColor="black"/>
+        </linearGradient>
+        <mask id={`k${u}`}>
+          <rect width="110" height="165" fill={`url(#m${u})`}/>
+        </mask>
+      </defs>
+
+      <g mask={`url(#k${u})`}>
+        {/* Palm */}
+        <rect x="15" y="68" width="80" height="76" rx="16"
+          fill={`url(#p${u})`}
+          stroke={glowColor} strokeOpacity="0.42" strokeWidth="1.2"/>
+        <ellipse cx="55" cy="83" rx="22" ry="9"
+          fill="white" fillOpacity="0.05"/>
+        <path d="M20 83 C32 77 44 74 55 73 C66 74 78 77 90 83"
+          stroke={glowColor} strokeOpacity="0.22" strokeWidth="1.1" fill="none"/>
+
+        {/* Index */}
+        <rect x="21" y="17" width="16" height="56" rx="8"
+          fill={`url(#f${u})`}
+          stroke={glowColor} strokeOpacity="0.42" strokeWidth="1.1"/>
+        <ellipse cx="29" cy="23" rx="5" ry="3.5"
+          fill="white" fillOpacity="0.19"/>
+        <path d="M23 57 Q29 55 37 57"
+          stroke={glowColor} strokeOpacity="0.26" strokeWidth="0.85" fill="none"/>
+
+        {/* Middle */}
+        <rect x="41" y="6" width="16" height="67" rx="8"
+          fill={`url(#f${u})`}
+          stroke={glowColor} strokeOpacity="0.42" strokeWidth="1.1"/>
+        <ellipse cx="49" cy="12" rx="5" ry="3.5"
+          fill="white" fillOpacity="0.19"/>
+        <path d="M43 57 Q49 55 57 57"
+          stroke={glowColor} strokeOpacity="0.26" strokeWidth="0.85" fill="none"/>
+
+        {/* Ring */}
+        <rect x="61" y="11" width="16" height="62" rx="8"
+          fill={`url(#f${u})`}
+          stroke={glowColor} strokeOpacity="0.42" strokeWidth="1.1"/>
+        <ellipse cx="69" cy="17" rx="5" ry="3.5"
+          fill="white" fillOpacity="0.19"/>
+        <path d="M63 57 Q69 55 77 57"
+          stroke={glowColor} strokeOpacity="0.26" strokeWidth="0.85" fill="none"/>
+
+        {/* Pinky */}
+        <rect x="80" y="24" width="13" height="49" rx="6.5"
+          fill={`url(#f${u})`}
+          stroke={glowColor} strokeOpacity="0.42" strokeWidth="1.1"/>
+        <ellipse cx="86.5" cy="30" rx="4" ry="3"
+          fill="white" fillOpacity="0.16"/>
+        <path d="M82 57 Q86.5 55 93 57"
+          stroke={glowColor} strokeOpacity="0.26" strokeWidth="0.85" fill="none"/>
+
+        {/* Thumb */}
+        <g transform="rotate(-28, 15, 88)">
+          <rect x="5" y="71" width="15" height="36" rx="7.5"
+            fill={`url(#f${u})`}
+            stroke={glowColor} strokeOpacity="0.42" strokeWidth="1.1"/>
+          <ellipse cx="12.5" cy="77" rx="4.5" ry="3.5"
+            fill="white" fillOpacity="0.15"/>
+        </g>
+
+        {/* Wrist */}
+        <rect x="22" y="140" width="66" height="32" rx="9"
+          fill={`url(#p${u})`}
+          stroke={glowColor} strokeOpacity="0.22" strokeWidth="1"/>
+      </g>
+    </svg>
+  )
+}
+
 // ── Notification pill ─────────────────────────────────────────────────────────
 function Notif({ notif, onRemove }) {
   useEffect(() => {
@@ -155,20 +254,9 @@ function HelpModal({ onClose }) {
   )
 }
 
-// ── Settings Modal ────────────────────────────────────────────────────────────
-function SettingsModal({ onClose }) {
-  const [settings, setSettings] = useState({
-    textSize: 'normal',
-    contrast: false,
-    captions: true,
-    volume: 75,
-    narration: true,
-    effects: true,
-    sensitivity: 'normal',
-  })
-  const set = (key, val) => setSettings(s => ({ ...s, [key]: val }))
-
-  const Toggle = ({ val, onChange }) => (
+// ── Settings sub-components (module-level to avoid re-creation on each render) ─
+function Toggle({ val, onChange }) {
+  return (
     <button onClick={() => onChange(!val)}
       className="relative w-10 h-5 rounded-full transition-all duration-200"
       style={{ background: val ? 'linear-gradient(90deg,#f97316,#fbbf24)' : 'rgba(255,255,255,0.1)' }}>
@@ -176,8 +264,10 @@ function SettingsModal({ onClose }) {
         style={{ left: val ? '22px' : '2px' }} />
     </button>
   )
+}
 
-  const BtnGroup = ({ options, value, onChange }) => (
+function BtnGroup({ options, value, onChange }) {
+  return (
     <div className="flex rounded-xl overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.1)' }}>
       {options.map(opt => (
         <button key={opt.value} onClick={() => onChange(opt.value)}
@@ -192,14 +282,30 @@ function SettingsModal({ onClose }) {
       ))}
     </div>
   )
+}
 
-  const Row = ({ label, children }) => (
+function Row({ label, children }) {
+  return (
     <div className="flex items-center justify-between py-2.5"
       style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
       <span className="text-white/60 text-sm">{label}</span>
       {children}
     </div>
   )
+}
+
+// ── Settings Modal ────────────────────────────────────────────────────────────
+function SettingsModal({ onClose }) {
+  const [settings, setSettings] = useState({
+    textSize: 'normal',
+    contrast: false,
+    captions: true,
+    volume: 75,
+    narration: true,
+    effects: true,
+    sensitivity: 'normal',
+  })
+  const set = (key, val) => setSettings(s => ({ ...s, [key]: val }))
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center"
@@ -498,7 +604,7 @@ export default function SimulationHUD({ onNext }) {
 
         {/* ── CENTER: Drop zone + hands ── */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="flex flex-col items-center gap-6">
+          <div className="flex flex-col items-center">
             {/* Drop zone — shows tool instruction when a tool is active */}
             <div className="relative">
               <div className="rounded-3xl flex items-center justify-center"
@@ -547,26 +653,25 @@ export default function SimulationHUD({ onNext }) {
               ))}
             </div>
 
-            {/* Virtual hands */}
-            <div className="flex gap-8">
-              {[false, true].map(isRight => (
-                <div key={String(isRight)} className="float-anim" style={{ animationDelay: isRight ? '0.5s' : '0s' }}>
-                  <svg width="48" height="64" viewBox="0 0 48 64" fill="none"
-                    style={{ transform: isRight ? 'scaleX(-1)' : 'scaleX(1)' }}>
-                    <rect x="10" y="32" width="28" height="24" rx="6"
-                      fill={activeTD ? `${activeTD.color}20` : 'rgba(251,146,60,0.15)'}
-                      stroke={activeTD ? `${activeTD.color}80` : 'rgba(251,146,60,0.5)'} strokeWidth="1.2"/>
-                    {[8,14,20,26,33].map((x, idx) => (
-                      <rect key={idx} x={x} y={idx === 4 ? 38 : 18} width="7" height={idx === 4 ? 12 : 16} rx="3.5"
-                        fill={activeTD ? `${activeTD.color}15` : 'rgba(251,146,60,0.12)'}
-                        stroke={activeTD ? `${activeTD.color}50` : 'rgba(251,146,60,0.4)'} strokeWidth="1.2"/>
-                    ))}
-                    <ellipse cx="24" cy="56" rx="16" ry="4" fill={activeTD ? `${activeTD.color}15` : 'rgba(251,146,60,0.1)'}/>
-                  </svg>
-                </div>
-              ))}
-            </div>
           </div>
+        </div>
+
+        {/* ── VR Hands ── */}
+        <div style={{
+          position: 'absolute', bottom: '-35px', left: '8%',
+          transform: 'rotate(6deg)',
+          animation: 'vrHandFloat 3.5s ease-in-out infinite',
+          pointerEvents: 'none', zIndex: 3,
+        }}>
+          <VRHand3D glowColor={activeTD?.color ?? '#fb923c'} isRight={false} />
+        </div>
+        <div style={{
+          position: 'absolute', bottom: '-35px', right: '8%',
+          transform: 'rotate(-6deg)',
+          animation: 'vrHandFloat 3.5s ease-in-out 0.85s infinite',
+          pointerEvents: 'none', zIndex: 3,
+        }}>
+          <VRHand3D glowColor={activeTD?.color ?? '#fb923c'} isRight={true} />
         </div>
 
         {/* ── BOTTOM LEFT: Controls ── */}
