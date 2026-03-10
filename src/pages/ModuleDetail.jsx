@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import Footer from '../components/Footer'
 
 const MODULE_DATA = {
   basic: {
@@ -355,7 +356,7 @@ function ModuleContent({ data, onBack, onStartVR }) {
           </button>
         </div>
 
-        <p className="text-center text-white/20 text-xs mt-4 tracking-wider">FYWARE VR TRAINING PLATFORM v2.4</p>
+        <Footer />
       </div>
     </div>
   )

@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import Footer from '../components/Footer'
 
 function CodeModal({ onConfirm, onClose }) {
   const [digits, setDigits] = useState(['', '', '', '', '', ''])
@@ -186,9 +187,7 @@ export default function Verification({ onNext }) {
             </div>
           </div>
 
-          <p className="text-center text-white/20 text-xs mt-4 tracking-wider">
-            FYWARE VR TRAINING PLATFORM v2.4
-          </p>
+          <Footer />
         </div>
       </div>
     </>

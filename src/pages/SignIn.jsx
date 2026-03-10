@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import Footer from '../components/Footer'
 
 const companies = [
   'Fyware Energy',
@@ -170,9 +171,7 @@ export default function SignIn({ onNext }) {
           </p>
         </div>
 
-        <p className="text-center text-white/20 text-xs mt-4 tracking-wider">
-          FYWARE VR TRAINING PLATFORM v2.4
-        </p>
+        <Footer />
       </div>
     </div>
   )

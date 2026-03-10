@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import Footer from '../components/Footer'
 
 const TOOLS_PRACTICE = [
   {
@@ -213,6 +214,7 @@ export default function Tutorial({ onNext }) {
             </button>
             <p className="text-white/25 text-xs mt-4">El tutorial es obligatorio para continuar</p>
           </div>
+          <Footer />
         </div>
       </div>
     )
@@ -300,6 +302,7 @@ export default function Tutorial({ onNext }) {
             <p className="text-center text-white/20 text-xs mt-5">El tutorial debe completarse íntegramente</p>
           )}
         </div>
+        <Footer />
       </div>
     </div>
   )

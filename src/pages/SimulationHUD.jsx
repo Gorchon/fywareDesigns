@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import Footer from '../components/Footer'
 
 // ── Tool definitions ──────────────────────────────────────────────────────────
 const TOOLS = [
@@ -738,6 +739,11 @@ export default function SimulationHUD({ onNext }) {
             <circle cx="12" cy="12" r="1.5" fill="rgba(251,146,60,0.5)"/>
             <path d="M12 3v4M12 17v4M3 12h4M17 12h4" stroke="rgba(251,146,60,0.3)" strokeWidth="1.2" strokeLinecap="round"/>
           </svg>
+        </div>
+
+        {/* Footer */}
+        <div className="absolute bottom-1 right-4">
+          <Footer className="text-white/10 mt-0" />
         </div>
       </div>
     </>
